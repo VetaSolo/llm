@@ -1,0 +1,1 @@
+Can you explain what RAG is in simple terms? I am a data scientist, I already know embeddings, but I am not sure when RAG is better than just fine-tuning a model. Give a practical answer, not a textbook definition.

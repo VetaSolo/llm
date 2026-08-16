@@ -1,0 +1,1 @@
+Hi, my laptop gets extremely hot after 20 minutes of work and then the fans become very loud. I mostly use Chrome with 15+ tabs and VS Code. This started after the last Windows update. What should I check first?

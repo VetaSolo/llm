@@ -1,0 +1,17 @@
+{
+  "source": "04_billing_complaint.txt",
+  "ok": true,
+  "degraded": false,
+  "category": "complaint",
+  "intent": "request_refund",
+  "sentiment": "negative",
+  "summary": "Двойная оплата подписки 15 марта.",
+  "key_points": [
+    "15 марта",
+    "9 часов",
+    "Роспотребнадзор"
+  ],
+  "route": "complaint",
+  "revised": false,
+  "final_answer": "Извините за двойное списание средств с вашей карты 15 марта. Я сразу инициирую возврат повторной оплаты. Проверьте личный кабинет в течение дня. Извиняемся, что чат поддержки молчал 9 часов."
+}
