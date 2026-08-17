@@ -10,7 +10,7 @@ from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from typing import Any
 
-import httpx2
+import httpx
 from dotenv import load_dotenv
 from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAI, RateLimitError
 
@@ -56,7 +56,7 @@ def get_client() -> OpenAI:
         )
 
     base_url = os.getenv("OPENAI_BASE_URL") or None
-    http_client = httpx2.Client(
+    http_client = httpx.Client(
         verify=_tls12_context(),
         timeout=60.0,
         trust_env=False,

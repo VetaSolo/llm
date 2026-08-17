@@ -108,7 +108,12 @@ def print_outcome(outcome: Outcome) -> None:
         print("STATUS: ok")
 
     expected = EXPECTED_CATEGORY.get(outcome.source)
-    if expected is not None:
+    if outcome.forced_category is not None:
+        print(
+            f"CHECK   category={result.category.value}  route={result.route}  "
+            f"[forced; classifier is not used for the reply]"
+        )
+    elif expected is not None:
         match = "MATCH" if result.category is expected else f"MISMATCH (expected {expected.value})"
         print(f"CHECK   category {result.category.value} [{match}]")
     if result.sentiment is Sentiment.negative:
@@ -268,6 +273,8 @@ def run_demo_routing() -> int:
         records.append(
             {
                 "forced_route": category.value,
+                "category": outcome.result.category.value if outcome.result else None,
+                "route": outcome.result.route if outcome.result else None,
                 "ok": outcome.ok,
                 "degraded": outcome.degraded,
                 "final_answer": outcome.result.final_answer if outcome.result else None,

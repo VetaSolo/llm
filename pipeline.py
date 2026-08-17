@@ -249,7 +249,7 @@ def _run(
         _step(steps, "guardrail", "final_answer", "ok", f"clipped to {MAX_ANSWER_CHARS} chars")
 
     result = PipelineResult(
-        **packet.model_dump(),
+        **packet_for_reply.model_dump(),
         final_answer=final_answer,
         route=route.key,
         revised=revised,
