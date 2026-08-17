@@ -45,10 +45,6 @@ LLM_MAX_RETRIES=3
 LLM_RETRY_BASE=0.5
 ```
 
-Ключ Groq начинается с `gsk_`. Для официального OpenAI уберите `OPENAI_BASE_URL` и поставьте, например, `OPENAI_MODEL=gpt-4o-mini`.
-
-Не вставляйте ключ в чат и не коммитьте `.env`.
-
 ## Запуск
 
 ```powershell
@@ -150,7 +146,3 @@ examples/        входы + sample_output.json
 | `OPENAI_BASE_URL` | совместимый endpoint (Groq, OpenRouter, Ollama) |
 | `LLM_MAX_RETRIES` | попытки при сетевом сбое (по умолчанию 3) |
 | `LLM_RETRY_BASE` | пауза первой повторной попытки в секундах |
-
-## Что сознательно не входит
-
-RAG, агенты, веб-UI, FastAPI, база знаний с ценами. Self-check ловит потерянные факты из письма, а не выдумывает неизвестную цену тарифа.
