@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 
 from schemas import Category
@@ -17,9 +18,20 @@ class PromptSpec:
     json_mode: bool = False
 
     def build_user(self, **fields: str) -> str:
+        """Fill the template without rescanning already inserted field values.
+
+        Sequential str.replace() would rewrite `{summary}` inside user_text
+        if a later field is named summary. Tokens are unique, so JSON/code
+        in the original text stays intact.
+        """
+        tokens: dict[str, str] = {}
         text = self.user_template
         for key, value in fields.items():
-            text = text.replace("{" + key + "}", str(value))
+            token = f"<<<PROMPT_{uuid.uuid4().hex}>>>"
+            tokens[token] = str(value)
+            text = text.replace("{" + key + "}", token)
+        for token, value in tokens.items():
+            text = text.replace(token, value)
         return text
 
 
