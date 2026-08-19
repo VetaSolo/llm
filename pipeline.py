@@ -65,10 +65,22 @@ def _llm(spec: PromptSpec, model_type, **fields: str):
     return parse_model(raw, model_type), raw
 
 
-def _repair(model_type, raw: str):
+def _repair(model_type, raw: str, spec: PromptSpec, **fields: str):
+    """Fix JSON syntax using the original text. Must not invent missing facts."""
+    known = "\n".join(
+        f"- {key}: {value}"
+        for key, value in fields.items()
+        if key != "user_text" and str(value).strip()
+    ) or "- (none)"
     schema = json.dumps(model_type.model_json_schema(), ensure_ascii=False)
     repaired = complete(
-        REPAIR.build_user(schema=schema, raw=raw or ""),
+        REPAIR.build_user(
+            schema=schema,
+            raw=raw or "",
+            step=spec.key,
+            user_text=fields.get("user_text", ""),
+            known_context=known,
+        ),
         system=REPAIR.system,
         json_mode=True,
     )
@@ -76,14 +88,14 @@ def _repair(model_type, raw: str):
 
 
 def _call_step(spec: PromptSpec, model_type, fallback, **fields: str):
-    """Try the prompt, then JSON repair, then a deterministic fallback."""
+    """Try the prompt, then JSON repair (no invention), then a deterministic fallback."""
     try:
         parsed, raw = _llm(spec, model_type, **fields)
         return parsed, raw, False
     except StructuredParseError as exc:
         logger.warning("invalid model output, trying JSON repair: %s", exc)
         try:
-            parsed, raw = _repair(model_type, exc.raw)
+            parsed, raw = _repair(model_type, exc.raw, spec, **fields)
             logger.info("JSON repair succeeded for %s", spec.key)
             return parsed, raw, False
         except (StructuredParseError, LLMError) as repair_exc:
@@ -140,7 +152,7 @@ def _run(
     labels, _, fb = _call_step(
         CLASSIFY,
         ClassifyLabels,
-        fallback_classify,
+        lambda: fallback_classify(text, extracted.summary, extracted.key_points),
         user_text=text,
         summary=extracted.summary,
         key_points=_points(extracted.key_points),

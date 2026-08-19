@@ -359,14 +359,31 @@ Missing details:
 REPAIR = PromptSpec(
     key="repair",
     title="repair_json",
-    idea="Last chance: turn broken model text into a JSON object matching the schema.",
+    idea="Fix JSON syntax only. Copy facts from the original text; never invent fields.",
     json_mode=True,
-    system="""You repair broken model output.
+    system="""You repair JSON syntax. You are not allowed to invent facts.
 
-Return ONE JSON object that matches the given schema.
-No markdown fences, no commentary. Fill required fields. Do not invent extra keys.
+Return ONE JSON object that matches the schema, or return {} if a required field
+cannot be recovered.
+
+Rules:
+- Use ONLY the original user text, the known step context, and values already
+  present in the broken output.
+- Copy facts (dates, IDs, amounts, names) from those sources. Do not guess.
+- Do NOT invent key_points, category, intent, sentiment, prices, or replies.
+- If a required field is missing from all three sources, omit it.
+  Validation will fail and a deterministic fallback will run. That is correct.
+- No markdown fences, no commentary.
 """,
-    user_template="""Schema:
+    user_template="""Step: {step}
+
+Original user text:
+{user_text}
+
+Known step context (already extracted in code, copy if needed):
+{known_context}
+
+Schema:
 {schema}
 
 Broken output:
